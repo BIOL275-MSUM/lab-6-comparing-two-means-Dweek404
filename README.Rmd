@@ -20,6 +20,25 @@ For each question below, write a sentence answering the question and show the co
 ANSWER
 
 ```{r}
+fish_summary <-
+  fish_long %>% 
+  group_by(location) %>% 
+  summarize(
+    n = n(),
+    mean = mean(species),
+    sd = sd(species),
+    sem = sd/sqrt(n),
+    upper = mean + 1.96 * sem,
+    lower = mean - 1.96 * sem
+  ) %>% 
+  print()
+t.test(formula = species ~ location, data = fish_long)
+
+t.test(formula = species ~ location, data = fish_long)
+
+
+#The 95% confidence interval is -4.587031 to 8.253697
+
 
 ```
 
@@ -30,7 +49,10 @@ ANSWER
 ANSWER
 
 ```{r}
+16.41667-14.5833=1.83334
+P=0.5596>0.05
 
+#Fail to reject the null hypothesis meaning that tributaries have no effect on the number of species of electric fish
 ```
 
 ## Question C
@@ -40,5 +62,7 @@ ANSWER
 ANSWER
 
 ```{r}
+#
+
 
 ```
