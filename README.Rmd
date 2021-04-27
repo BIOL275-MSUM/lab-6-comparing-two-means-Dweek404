@@ -1,7 +1,6 @@
 ---
 title: "Lab 6 Comparing two means"
-author: ""
-date: `r Sys.Date()`
+author: "Dontae Johnson"
 output: github_document
 ---
 
@@ -17,9 +16,20 @@ For each question below, write a sentence answering the question and show the co
 
 > What is the mean different in the number of species between areas upstream and downstream of a tributary? What is the 95% confidence interval of this mean difference. Show your code and write a sentence giving your answer
 
-ANSWER
+The 95% confidence interval is -4.587031 to 8.253697
 
 ```{r}
+
+library(tidyverse)
+fish <- read_csv("chap12q19ElectricFish.csv")
+
+fish_long <- 
+  pivot_longer(fish, speciesUpstream:speciesDownstream,
+               names_to = "location",
+               values_to = "species") %>% 
+  mutate(location = str_remove(location, c("species"))) %>% 
+  print()
+
 fish_summary <-
   fish_long %>% 
   group_by(location) %>% 
@@ -34,10 +44,9 @@ fish_summary <-
   print()
 t.test(formula = species ~ location, data = fish_long)
 
-t.test(formula = species ~ location, data = fish_long)
 
 
-#The 95% confidence interval is -4.587031 to 8.253697
+
 
 
 ```
@@ -46,23 +55,47 @@ t.test(formula = species ~ location, data = fish_long)
 
 > Test the hypothesis that the tributaries have no effect on the number of species of electric fish.
 
-ANSWER
-
-```{r}
-16.41667-14.5833=1.83334
+Fail to reject the null hypothesis meaning that tributaries have no effect on the number of species of electric fish
+The differencee is calculated with the following numbers. 16.41667-14.5833=1.83334
 P=0.5596>0.05
 
-#Fail to reject the null hypothesis meaning that tributaries have no effect on the number of species of electric fish
+```{r}
+
+
 ```
 
 ## Question C
 
 > State the assumptions that you had to make to complete parts (A) and (B). Create a graph to assess whether one of those assumptions was met.
 
-ANSWER
+Distributed normally 
+and random sample 
 
 ```{r}
-#
+#I made an extra graph so im putting it in but didnt have to make the first graph. 
+fish_long %>%
+ggplot(aes(x=location, y = species))+
+  geom_jitter(aes(color = location), 
+              shape = 16, alpha = 1, width = 0.4) +
+  geom_errorbar(aes(y = mean, ymax = upper, ymin = lower), 
+                data = fish_summary, width = .1) +
+  geom_point(aes(y = mean), 
+             data = fish_summary) +
+  scale_color_manual(values = c("darkorange","cyan4")) +
+  theme_minimal() +
+  guides(color = "none")
+
+fish_long %>% 
+  ggplot(aes(x = species)) +
+  geom_histogram(
+    aes(fill = location), 
+    bins = 15, 
+    alpha = 0.5, 
+    position = "identity",
+    na.rm = TRUE
+  ) +
+  scale_fill_manual(values = c("purple", "red", "blue")) +
+  theme_minimal()
 
 
 ```
@@ -81,11 +114,32 @@ They measured the body temperature of crabs every 10 minutes for 1.5 hours. Thes
 Graph the distribution of body temperatures for each crab type:
 
 ```{r}
+library(readr)
+chap15q27FiddlerCrabFans <- read_csv("chap15q27FiddlerCrabFans.csv")
+View(chap15q27FiddlerCrabFans)
+
+
+chap15q27FiddlerCrabFans %>%
+  ggplot(aes(x = bodyTemperature)) + 
+  geom_histogram(
+    aes(fill = crabType), 
+    bins = 15, 
+    alpha = 0.2, 
+    position = "identity",
+    na.rm = TRUE
+  ) + 
+  scale_fill_manual(values = c("purple", "red", "blue", "green")) +
+  theme_minimal()
+
 ```
 
 ### Question E
 
 Does body temperature varies among crab types? State the null and alternative hypothesis, conduct and ANOVA, and interpret the results.
 
+P value is extremely low. Meaning that we can reject the null hypothesis. There is a difference between crab types temperatures.
 ```{r}
+aov(bodyTemperature ~ crabType, data = chap15q27FiddlerCrabFans)
+
+
 ```
